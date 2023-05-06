@@ -58,9 +58,6 @@
     <ClCompile Include="helper_classes.cpp">
       <Filter>plugin</Filter>
     </ClCompile>
-    <ClCompile Include="d3dRend11.cpp">
-      <Filter>Renderer\Direct3D</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\common\x86\x86_mem.cpp">
       <Filter>plugin</Filter>
     </ClCompile>

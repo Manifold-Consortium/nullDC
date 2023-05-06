@@ -63,7 +63,7 @@ bool parse_mds(wchar *mds_filename,bool verbose)
 	FILE*mds_file = _tfopen (mds_filename,L"rb");
 	if(!mds_file)
 	{
-        fprintf(stderr,"Could not open the mds-file <%s>\n",mds_filename);
+        fwprintf(stderr,L"Could not open the mds-file <%s>\n",mds_filename);
 		return false;
 	}
     

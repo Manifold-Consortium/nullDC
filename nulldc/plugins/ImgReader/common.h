@@ -1,6 +1,7 @@
 #pragma once
 #include "gd_driver.h"
 #include <vector>
+#include <xstring>
 using namespace std;
 
 extern u32 NullDriveDiscType;

@@ -5,6 +5,11 @@
 #include "windows.h"
 #include "emitter/emitter.h"
 
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
 //block manager : new implementation 
 //ideas :
 //use native locks for code overwrites
@@ -43,9 +48,6 @@
 
 void FASTCALL RewriteBasicBlock(CompiledBlockInfo* cBB);
 
-#include <vector>
-#include <algorithm>
-
 #define BLOCK_LUT_GUESS
 //#define DEBUG_BLOCKLIST
 //#define OPTIMISE_LUT_SORT
@@ -70,7 +72,7 @@ int compare_BlockLookups(const void * a, const void * b)
 }
 
 
-class BlockList:public vector<CompiledBlockInfo*>
+class BlockList: public std::vector<CompiledBlockInfo*>
 {
 public :
 	size_t ItemCount;
@@ -97,6 +99,7 @@ public :
 	u32 Add(CompiledBlockInfo* block)
 	{
 		Test();
+		auto beg = this->begin();
 		if (ItemCount==size())
 		{	
 			ItemCount++;
@@ -109,7 +112,7 @@ public :
 			#ifdef DEBUG_BLOCKLIST
 			verify(_Myfirst[ItemCount]==BLOCK_NONE);
 			#endif
-			_Myfirst[ItemCount]=block;
+			beg[ItemCount]=block;
 			ItemCount++;
 			Test();
 			return ItemCount-1;
@@ -121,9 +124,10 @@ public :
 		if (ItemCount==0)
 			return;
 		
+		auto beg = this->begin();
 		for (u32 i=0;i<ItemCount;i++)
 		{
-			if (_Myfirst[i]==block)
+			if (beg[i]==block)
 			{
 				ItemCount--;
 				if (ItemCount==0)
@@ -131,7 +135,7 @@ public :
 					#ifdef DEBUG_BLOCKLIST
 					verify(_Myfirst[0]==block && i==0);
 					#endif
-					_Myfirst[i]=BLOCK_NONE;
+					beg[i]=BLOCK_NONE;
 					CheckEmpty();
 				}
 				else if (ItemCount!=i)
@@ -141,8 +145,8 @@ public :
 					verify(ItemCount<size());
 					verify(i<ItemCount);
 					#endif
-					_Myfirst[i]=_Myfirst[ItemCount];
-					_Myfirst[ItemCount]=BLOCK_NONE;
+					beg[i]=beg[ItemCount];
+					beg[ItemCount]=BLOCK_NONE;
 				}
 				else
 				{
@@ -150,7 +154,7 @@ public :
 					verify(ItemCount<size());
 					verify(i==ItemCount);
 					#endif
-					_Myfirst[i]=BLOCK_NONE;
+					beg[i]=BLOCK_NONE;
 				}
 
 				Test();
@@ -163,13 +167,14 @@ public :
 	CompiledBlockInfo* Find(u32 address,u32 cpu_mode)
 	{
 		Test();
+		auto beg = this->begin();
 		for (u32 i=0;i<ItemCount;i++)
 		{
-			if ((_Myfirst[i]->start == address) &&
-				(_Myfirst[i]->cpu_mode_tag == cpu_mode)
+			if ((beg[i]->start == address) &&
+				(beg[i]->cpu_mode_tag == cpu_mode)
 				)
 			{
-				return _Myfirst[i];
+				return beg[i];
 			}
 		}
 		return 0;
@@ -207,7 +212,7 @@ public :
 		if (size())
 		{
 			//using a specialised routine is gona be faster .. bah
-			qsort(_Myfirst, ItemCount, sizeof(CompiledBlockInfo*), compare_BlockLookups);
+			qsort(this, ItemCount, sizeof(CompiledBlockInfo*), compare_BlockLookups);
 			//sort(begin(), end());
 			/*u32 max=_Myfirst[0]->lookups/100;
 			//if (max==0)

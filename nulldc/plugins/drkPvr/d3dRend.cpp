@@ -630,7 +630,7 @@ u32 vramlock_ConvOffset32toOffset64(u32 offset32)
 			const s32 sw = (s32)((u32)(8<<tsp.TexU));
 			const s32 sh = (s32)((u32)(8<<tsp.TexV));
 			if (( (sw + sh) << 1) > VRAM_SIZE) { //Minimum of 2components
-				printf("Unsupported texture(OUT OF RANGE) w %u h %u fmt %u vq %u\n",8<<tsp.TexU,8<<tsp.TexV,tcw.NO_PAL.VQ_Comp);
+				printf("Unsupported texture(OUT OF RANGE) w %u h %u fmt %u vq %u\n", 8<<tsp.TexU, 8<<tsp.TexV, 0, tcw.NO_PAL.VQ_Comp);
 				return false;
 			}
 
@@ -808,7 +808,7 @@ u32 vramlock_ConvOffset32toOffset64(u32 offset32)
 			IDirect3DSurface9* surf=fb_surf;
 			
 			//assume rect is same as front buffer
-			RECT rs={0,0,fb_surf_desc.Width,fb_surf_desc.Height};
+			RECT rs={0,0,(LONG)fb_surf_desc.Width,(LONG)fb_surf_desc.Height};
 			
 			dev->ColorFill(backbuffer,0,D3DCOLOR_ARGB(255,VO_BORDER_COL.Red,VO_BORDER_COL.Green,VO_BORDER_COL.Blue));
 
@@ -2406,7 +2406,7 @@ __error_out:
 			u8* fog_density=(u8*)&FOG_DENSITY;
 			float fog_den_mant=fog_density[1]/128.0f;		//bit 7 -> x. bit, so [6:0] -> fraction -> /128
 			s32 fog_den_exp=(s8)fog_density[0];
-			float fog_den_float=fog_den_mant*pow(2.0f,fog_den_exp);
+			float fog_den_float=fog_den_mant*float(pow(2.0f,fog_den_exp));
 
 			float ps_FOG_DENSITY[4]= { fog_den_float,0,0,1 };
 			dev->SetPixelShaderConstantF(4,ps_FOG_DENSITY,1);
